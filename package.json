@@ -1,5 +1,5 @@
 {
-  "name": "mlb-cli",
+  "name": "mlbscores",
   "version": "0.0.1",
   "description": "A CLI tool to display MLB games and scores.",
   "main": "./bin/mlb",
@@ -28,7 +28,8 @@
     "baseball",
     "scores",
     "sports",
-    "stats"
+    "stats",
+    "cli"
   ],
   "author": "Ryan Burgess",
   "license": "MIT",
