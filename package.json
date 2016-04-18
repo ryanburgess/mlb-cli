@@ -1,0 +1,39 @@
+{
+  "name": "mlb-cli",
+  "version": "0.0.1",
+  "description": "A CLI tool to display MLB games and scores.",
+  "main": "./bin/mlb",
+  "bin": {
+    "mlb": "./bin/mlb"
+  },
+  "engines": {
+    "node": "4.4.2"
+  },
+  "preferGlobal": true,
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "cli-table": "^0.3.1",
+    "moment": "^2.12.0",
+    "request": "^2.72.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanburgess/mlb-cli.git"
+  },
+  "keywords": [
+    "mlb",
+    "baseball",
+    "scores",
+    "sports",
+    "stats"
+  ],
+  "author": "Ryan Burgess",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ryanburgess/mlb-cli/issues"
+  },
+  "homepage": "https://github.com/ryanburgess/mlb-cli#readme"
+}

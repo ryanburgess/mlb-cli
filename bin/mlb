@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+'use strict';
+const argument = process.argv[2];
+const argumentSec = process.argv[3];
+const moment = require('moment');
+const mlb = require('../index');
+const today = moment();
+
+switch (true) {
+  case (argument === 'date'):
+    mlb(argumentSec);
+  break;
+  case (argument === 'tomorrow'):
+    const tomorrow = today.add(1, 'days');
+    const tomorrowDate = moment(tomorrow).format('YYYY-MM-DD');
+    mlb(tomorrowDate);
+  break;
+  case (argument === 'yesterday'):
+    const yesterday = today.add(-1, 'days');
+    const yesterdayDate = moment(yesterday).format('YYYY-MM-DD');
+    mlb(yesterdayDate);
+  break;
+  case (argument === 'today'):
+    mlb();
+  break;
+  default:
+    mlb();
+  break;
+}
