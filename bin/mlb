@@ -8,16 +8,16 @@ const today = moment();
 
 switch (true) {
   case (argument === 'date'):
-    mlb(argumentSec);
+    mlb(new Date(argumentSec));
   break;
   case (argument === 'tomorrow'):
     const tomorrow = today.add(1, 'days');
-    const tomorrowDate = moment(tomorrow).format('YYYY-MM-DD');
+    const tomorrowDate = moment(tomorrow).toDate();
     mlb(tomorrowDate);
   break;
   case (argument === 'yesterday'):
     const yesterday = today.add(-1, 'days');
-    const yesterdayDate = moment(yesterday).format('YYYY-MM-DD');
+    const yesterdayDate = moment(yesterday).toDate();
     mlb(yesterdayDate);
   break;
   case (argument === 'today'):

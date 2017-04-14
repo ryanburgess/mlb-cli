@@ -1,20 +1,13 @@
 'use strict';
-const cheerio = require('cheerio');
-const request = require('request');
+const gamedayHelper = require( 'gameday-helper' );
 const Table = require('cli-table');
 
 module.exports = function mlb(date) {
-  
-  let url = 'http://sports.yahoo.com/mlb/scoreboard/';
-  if(date !== undefined){
-    url = 'http://sports.yahoo.com/mlb/scoreboard/?date=' + date;
+
+  // use today's date if none specified
+  if(date === undefined){
+    var date = new Date();
   }
-  request({
-      method: 'GET',
-      url: url
-    }, function(err, response, body, callback) {
-    if (err) return console.error(err);
-    const $ = cheerio.load(body);
 
     // create table layout
     const table = new Table({
@@ -22,24 +15,51 @@ module.exports = function mlb(date) {
         colWidths: [30, 5, 5, 5, 30]
     });
 
-    $('.box').each(function() {
-      const away = $(this).find('.away th').text().trim();
-      const home = $(this).find('.home th').text().trim();
-      const status = $(this).find('.links a').text().trim();
-      const homeScore = $(this).find('.home').children('.score').text().trim();
-      const awayScore = $(this).find('.away').children('.score').text().trim();
-      const homeHits = $(this).find('.home').children('.hits').text().trim();
-      const awayHits = $(this).find('.away').children('.hits').text().trim();
-      const homeErrors = $(this).find('.home').children('.errors').text().trim();
-      const awayErrors = $(this).find('.away').children('.errors').text().trim();
-      
-      if(away !== ''){
-        table.push(
-          [home + '\n' + away, homeScore + '\n' + awayScore, homeHits + '\n' + awayHits, homeErrors + '\n' + awayErrors, status]
-        );
-      }
-    });
 
+  gamedayHelper.miniScoreboard( date )
+  .then( function( data ){
+
+    data.game.forEach(function(game) {
+
+      const away = game.away_team_name;
+      const home = game.home_team_name;
+
+      var homeScore = ''
+      var awayScore = ''
+      var homeHits = ''
+      var awayHits = ''
+      var homeErrors = ''
+      var awayErrors = ''
+      var status = ''
+
+      if (game.status === 'Preview') {
+         homeScore = awayScore = homeHits = awayHits = homeErrors = awayErrors = 0 
+         status = game.time + ' ' + game.ampm + ' ' + game.time_zone
+      } else {
+            homeScore = game.home_team_runs;
+            awayScore = game.away_team_runs;
+            homeHits = game.home_team_hits;
+            awayHits = game.away_team_hits;
+            homeErrors = game.home_team_errors;
+            awayErrors = game.away_team_errors;
+
+        if (game.status === 'Final') {
+           status = 'Final'
+            if (game.inning !== '9') {
+              status += ' ' + game.inning}
+         } else {
+           if (game.top_inning === 'Y') {
+              status = 'Top ' + game.inning 
+             } else {
+              status = 'Bot ' + game.inning }
+         }
+
+     }
+
+      table.push(
+        [home + '\n' + away, homeScore + '\n' + awayScore, homeHits + '\n' + awayHits, homeErrors + '\n' + awayErrors, status]
+       )
+    });
     // output the schedule table
     console.log(table.toString());
   });
