@@ -11,14 +11,12 @@
   },
   "preferGlobal": true,
   "dependencies": {
-    "cheerio": "^0.20.0",
     "cli-table": "^0.3.1",
-    "moment": "^2.12.0",
-    "request": "^2.72.0"
+    "gameday-helper": "^0.1.1",
+    "moment": "^2.12.0"
   },
   "devDependencies": {},
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ryanburgess/mlb-cli.git"
