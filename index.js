@@ -18,8 +18,17 @@ module.exports = function mlb(date) {
 
   gamedayHelper.miniScoreboard( date )
   .then( function( data ){
+    
+    // if only one game on a day (happens during playoffs), 
+    // then data.game is just a game obj rather than array of game objs
+    var games;
+    if (!(data.game instanceof Array)) {
+      games = [data.game];
+    } else {
+      games = data.game;
+    }
 
-    data.game.forEach(function(game) {
+    games.forEach(function(game) {
 
       const away = game.away_team_name;
       const home = game.home_team_name;
@@ -62,6 +71,9 @@ module.exports = function mlb(date) {
     });
     // output the schedule table
     console.log(table.toString());
+  })
+  .catch(function(err) {
+    console.log("Error fetching game data: see error from gameday-helper above.")
   });
 };
   
