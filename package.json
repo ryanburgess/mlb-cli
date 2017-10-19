@@ -1,6 +1,6 @@
 {
   "name": "mlbscores",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "A CLI tool to display MLB games and scores.",
   "main": "./bin/mlb",
   "bin": {
