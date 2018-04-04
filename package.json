@@ -6,9 +6,6 @@
   "bin": {
     "mlb": "./bin/mlb"
   },
-  "engines": {
-    "node": "4.4.2"
-  },
   "preferGlobal": true,
   "dependencies": {
     "cli-table": "^0.3.1",
