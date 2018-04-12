@@ -2,79 +2,104 @@
 const gamedayHelper = require( 'gameday-helper' );
 const Table = require('cli-table');
 
-module.exports = function mlb(date) {
+/*
+ *
+ */
+var width = process.stdout.columns;
+var height = process.stdout.rows;
+var slots = Math.floor(width/50)-1;
 
-  // use today's date if none specified
-  if(date === undefined){
-    var date = new Date();
-  }
-
-    // create table layout
-    const table = new Table({
-        head: ['Teams', 'R', 'H', 'E', 'Status'],
-        colWidths: [30, 5, 5, 5, 30]
-    });
-
-
-  gamedayHelper.miniScoreboard( date )
-  .then( function( data ){
-    
-    // if only one game on a day (happens during playoffs), 
-    // then data.game is just a game obj rather than array of game objs
-    var games;
-    if (!(data.game instanceof Array)) {
-      games = [data.game];
-    } else {
-      games = data.game;
+/*
+ *
+ */
+const mlb = (date = new Date()) => {
+  /*
+   *
+   */
+  var table = new Table({
+    colWidths: [50, 50, 50, 50, 50, 50, 50].slice(1, slots+1),
+    chars: {
+      'top': ''
+      , 'top-mid': ''
+      , 'top-left': ''
+      , 'top-right': ''
+      , 'bottom': ''
+      , 'bottom-mid': ''
+      , 'bottom-left': ''
+      , 'bottom-right': ''
+      , 'left': ''
+      , 'left-mid': ''
+      , 'mid': ''
+      , 'mid-mid': ''
+      , 'right': ''
+      , 'right-mid': ''
+      , 'middle': ''
     }
-
-    games.forEach(function(game) {
-
-      const away = game.away_team_name;
-      const home = game.home_team_name;
-
-      var homeScore = ''
-      var awayScore = ''
-      var homeHits = ''
-      var awayHits = ''
-      var homeErrors = ''
-      var awayErrors = ''
-      var status = ''
-
-      if (game.status === 'Preview') {
-         homeScore = awayScore = homeHits = awayHits = homeErrors = awayErrors = 0 
-         status = game.time + ' ' + game.ampm + ' ' + game.time_zone
-      } else {
-            homeScore = game.home_team_runs;
-            awayScore = game.away_team_runs;
-            homeHits = game.home_team_hits;
-            awayHits = game.away_team_hits;
-            homeErrors = game.home_team_errors;
-            awayErrors = game.away_team_errors;
-
-        if (game.status === 'Final') {
-           status = 'Final'
-            if (game.inning !== '9') {
-              status += ' ' + game.inning}
-         } else {
-           if (game.top_inning === 'Y') {
-              status = 'Top ' + game.inning 
-             } else {
-              status = 'Bot ' + game.inning }
-         }
-
-     }
-
-      table.push(
-        [home + '\n' + away, homeScore + '\n' + awayScore, homeHits + '\n' + awayHits, homeErrors + '\n' + awayErrors, status]
-       )
-    });
-    // output the schedule table
-    console.log(table.toString());
-  })
-  .catch(function(err) {
-    console.log("Error fetching game data: see error from gameday-helper above.")
   });
-};
-  
-  
+  /*
+   *
+   */
+  gamedayHelper.masterScoreboard( date )
+  .then( (data) => {
+    /*
+     *
+     */
+    if(data.game)
+    {
+      const games = !(data.game instanceof Array) ? [data.game] : data.game;
+      let slot = 0;
+
+      games.forEach( (game) => {
+
+        var home = `${game.home_team_name}`;
+        var away = `${game.away_team_name}`;
+
+        const status = game.status.status;
+        var state;
+        var runs = '0\n0';
+        switch(status) {
+          case 'Final':
+          case 'Cancelled':
+          case 'Postponed':
+            state = status;
+            runs = `${game.linescore.r.home}\n${game.linescore.r.away}`;
+          break;
+          case 'Preview':
+            state = `${game.time}${game.ampm} ${game.time_zone}`;
+          break;
+          case 'In Progress':
+            state = `${game.status.inning_state} ${game.status.inning}\n${game.status.b}-${game.status.s} ${game.status.o} out`;
+            runs = `${game.linescore.r.home}\n${game.linescore.r.away}`;
+          break;
+        }
+
+
+        let score = new Table({colWidths: [22, 5, 13]});
+        score.push([ `${home}\n${away}`, `${runs}`, `${state}` ]);
+
+        switch(slot) {
+          case 0:
+            table.push([ score ]);
+          break;
+          default:
+            table[table.length-1].push(score);
+          break;
+        }
+
+        slot == slots ? slot = 0 : slot++;
+      });
+      process.stdout.write('\x1B[2J\x1B[0f');
+      var clear = [];
+      for(let n = 0; n < (height-1)-(table.length*4); n++) {clear.push('\n');}
+      console.log(`${table.toString()}${clear.join('')}`);
+    } else {
+      console.log('no games scheduled today');
+    }
+  })
+  .catch( (error) => {
+    console.log( error );
+  });
+
+}
+
+module.exports = mlb;

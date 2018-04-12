@@ -25,5 +25,8 @@ switch (true) {
   break;
   default:
     mlb();
+    setInterval(function () {
+      mlb();
+    }, 60000);
   break;
 }
