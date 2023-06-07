@@ -13,7 +13,7 @@
   "dependencies": {
     "cli-table": "^0.3.1",
     "gameday-helper": "^0.1.1",
-    "moment": "^2.12.0"
+    "moment": "^2.29.4"
   },
   "devDependencies": {},
   "scripts": {
